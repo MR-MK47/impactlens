@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { ArrowLeft, Loader2, Send, Users, Image as ImageIcon, CheckCircle2 } from "lucide-react";
 import { supabase } from "../../../lib/supabase";
 import { useAuth } from "../../../lib/auth";
-import { sendWhatsAppTemplate } from "../../../lib/wacrm";
+import { sendWhatsAppTemplate, isWhatsAppConfigured } from "../../../lib/wacrm";
 import type { Donor, MediaSubmission } from "../../../lib/database.types";
 
 export const Route = createFileRoute("/app/whatsapp/broadcast")({
@@ -70,8 +70,8 @@ function BroadcastPage() {
     if (!organization || !user) return;
     
     // Ensure API is configured
-    if (!organization.wa_phone_number_id || !organization.wa_access_token) {
-      alert("WhatsApp API is not configured. Please add credentials in Settings.");
+    if (!isWhatsAppConfigured()) {
+      alert("WhatsApp API is not configured in your environment variables (.env).");
       return;
     }
 
@@ -94,11 +94,7 @@ function BroadcastPage() {
             donor.full_name.split(' ')[0], // {{1}} Name
             messageBody || '', // {{2}} Update
             organization.name // {{3}} Org Name
-          ],
-          credentials: {
-            phoneNumberId: organization.wa_phone_number_id!,
-            accessToken: organization.wa_access_token!
-          }
+          ]
         })
       );
 

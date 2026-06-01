@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { Check, X, Loader2, Sparkles, MessageSquare } from "lucide-react";
+import { Check, X, Loader2, Sparkles, MessageSquare, CheckCircle2 } from "lucide-react";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../lib/auth";
 import type { MediaSubmission } from "../../lib/database.types";

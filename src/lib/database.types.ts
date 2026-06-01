@@ -144,6 +144,8 @@ export interface Receipt {
 export interface BlogPost {
   id: string;
   org_id: string;
+  created_by: string | null;
+  submission_id: string | null;
   title: string;
   slug: string;
   body: string | null;
@@ -164,6 +166,7 @@ export interface WhatsAppBroadcast {
   id: string;
   org_id: string;
   sent_by: string | null;
+  submission_id: string | null;
   audience_type: BroadcastAudience;
   audience_filter: Json;
   message_template: string;
@@ -215,7 +218,7 @@ export interface Database {
       donors: { Row: Donor; Insert: Partial<Donor> & Pick<Donor, 'org_id' | 'full_name'>; Update: Partial<Donor> };
       donations: { Row: Donation; Insert: Partial<Donation> & Pick<Donation, 'org_id' | 'donor_id' | 'amount'>; Update: Partial<Donation> };
       receipts: { Row: Receipt; Insert: Partial<Receipt> & Pick<Receipt, 'org_id' | 'donor_id' | 'receipt_number' | 'amount'>; Update: Partial<Receipt> };
-      blog_posts: { Row: BlogPost; Insert: Partial<BlogPost> & Pick<BlogPost, 'org_id' | 'title' | 'slug'>; Update: Partial<BlogPost> };
+      seo_blogs: { Row: BlogPost; Insert: Partial<BlogPost> & Pick<BlogPost, 'org_id' | 'title' | 'slug'>; Update: Partial<BlogPost> };
       whatsapp_broadcasts: { Row: WhatsAppBroadcast; Insert: Partial<WhatsAppBroadcast> & Pick<WhatsAppBroadcast, 'org_id' | 'audience_type' | 'message_template'>; Update: Partial<WhatsAppBroadcast> };
       team_invites: { Row: TeamInvite; Insert: Partial<TeamInvite> & Pick<TeamInvite, 'org_id' | 'email'>; Update: Partial<TeamInvite> };
       activity_log: { Row: ActivityLog; Insert: Partial<ActivityLog> & Pick<ActivityLog, 'org_id' | 'action'>; Update: Partial<ActivityLog> };

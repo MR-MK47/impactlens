@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { Search, Plus, FileText, Globe, Loader2, Sparkles, CheckCircle2 } from "lucide-react";
-import { supabase } from "../../lib/supabase";
-import { useAuth } from "../../lib/auth";
+import { Search, FileText, Loader2, Sparkles, CheckCircle2 } from "lucide-react";
+import { supabase } from "../../../lib/supabase";
+import { useAuth } from "../../../lib/auth";
 
 export const Route = createFileRoute("/app/seo/")({
   component: SeoIndex,
@@ -79,7 +79,7 @@ function SeoIndex() {
                     alt={blog.title} 
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                  {blog.is_published && (
+                  {blog.status === 'published' && (
                     <div className="absolute top-3 right-3">
                       <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/90 backdrop-blur-sm text-white text-xs font-medium shadow-sm">
                         <CheckCircle2 className="size-3.5" /> Published
@@ -92,10 +92,10 @@ function SeoIndex() {
               <div className="p-5 flex-1 flex flex-col">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="px-2 py-1 bg-secondary rounded text-xs font-medium text-muted-foreground">
-                    {blog.focus_keyword || 'No keyword'}
+                    {(blog.focus_keywords && blog.focus_keywords.length > 0) ? blog.focus_keywords[0] : 'No keyword'}
                   </span>
                   <span className="text-xs text-muted-foreground">
-                    {new Date(blog.created_at).toLocaleDateString()}
+                    {new Date(blog.created_at).toLocaleDateString('en-US')}
                   </span>
                 </div>
                 
@@ -112,7 +112,8 @@ function SeoIndex() {
                     <Search className="size-3" /> SEO Optimized
                   </span>
                   <Link 
-                    to={`/app/seo/${blog.id}`}
+                    to="/app/seo/$id"
+                    params={{ id: blog.id }}
                     className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-1"
                   >
                     Edit Post

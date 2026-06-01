@@ -8,7 +8,8 @@ import type { UserRole } from './database.types';
 export async function requireAuth() {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) {
-    throw redirect({ to: '/login', search: { redirect: window.location.pathname } });
+    const currentPath = typeof window !== 'undefined' ? window.location.pathname : undefined;
+    throw redirect({ to: '/login', search: { redirect: currentPath } });
   }
   return session;
 }

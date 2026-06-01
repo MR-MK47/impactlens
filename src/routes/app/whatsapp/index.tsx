@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { MessageSquare, Plus, Users, Loader2, CheckCircle2, Clock } from "lucide-react";
-import { supabase } from "../../lib/supabase";
-import { useAuth } from "../../lib/auth";
+import { supabase } from "../../../lib/supabase";
+import { useAuth } from "../../../lib/auth";
+import { isWhatsAppConfigured } from "../../../lib/wacrm";
 
 export const Route = createFileRoute("/app/whatsapp/")({
   component: WhatsappIndex,
@@ -41,7 +42,7 @@ function WhatsappIndex() {
     );
   }
 
-  const isConfigured = organization?.wa_phone_number_id && organization?.wa_access_token;
+  const isConfigured = isWhatsAppConfigured();
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">

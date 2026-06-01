@@ -36,7 +36,7 @@ function LoginPage() {
       <div className="absolute inset-0 opacity-[0.04]">
         <div className="grid grid-cols-6 gap-2 p-4 h-full">
           {Array.from({ length: 24 }).map((_, i) => (
-            <div key={i} className="rounded-xl bg-primary" style={{ opacity: 0.3 + Math.random() * 0.7 }} />
+            <div key={i} className="rounded-xl bg-primary" style={{ opacity: 0.3 + (((i * 137) % 100) / 100) * 0.7 }} />
           ))}
         </div>
       </div>

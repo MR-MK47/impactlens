@@ -172,3 +172,81 @@ export async function fileToBase64(file: File): Promise<{ base64: string; mimeTy
     reader.readAsDataURL(file);
   });
 }
+
+/**
+ * Generate an SEO blog post from a single photo and description.
+ */
+export async function generateBlogFromPhoto(
+  photoUrl: string,
+  description: string,
+  orgType: string = 'ngo'
+): Promise<{
+  title: string;
+  markdownContent: string;
+  metaDescription: string;
+  focusKeyword: string;
+  slug: string;
+}> {
+  if (!GEMINI_API_KEY) {
+    return {
+      title: 'Draft Blog Post',
+      markdownContent: 'AI blog generation unavailable — please configure your Gemini API key.',
+      metaDescription: '',
+      focusKeyword: '',
+      slug: 'draft-post',
+    };
+  }
+
+  const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{
+        parts: [{
+          text: `You are an SEO content writer for a ${orgType} organization.
+
+Based on this field photo description:
+"${description}"
+
+Generate a complete SEO blog post in the following JSON format:
+{
+  "title": "SEO-optimized title (50-60 chars)",
+  "markdownContent": "300-500 word article in markdown format",
+  "metaDescription": "Meta description (max 160 chars)",
+  "focusKeyword": "main keyword",
+  "slug": "url-friendly-slug"
+}
+
+Respond with ONLY valid JSON, no markdown code blocks.`,
+        }],
+      }],
+      generationConfig: {
+        temperature: 0.8,
+        maxOutputTokens: 2000,
+      },
+    }),
+  });
+
+  const data = await response.json();
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+
+  try {
+    const cleaned = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    const parsed = JSON.parse(cleaned);
+    return {
+      title: parsed.title || 'Draft Post',
+      markdownContent: parsed.markdownContent || parsed.body || text,
+      metaDescription: parsed.metaDescription || '',
+      focusKeyword: parsed.focusKeyword || '',
+      slug: parsed.slug || `draft-${Date.now()}`,
+    };
+  } catch {
+    return {
+      title: 'Draft Blog Post',
+      markdownContent: text,
+      metaDescription: '',
+      focusKeyword: '',
+      slug: `draft-${Date.now()}`,
+    };
+  }
+}

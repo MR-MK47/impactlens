@@ -204,3 +204,74 @@ export async function sendImpactUpdate(
 
   return results;
 }
+
+export async function sendWhatsAppTemplate({
+  to,
+  templateName,
+  mediaUrl,
+  variables,
+  credentials
+}: {
+  to: string;
+  templateName: string;
+  mediaUrl?: string;
+  variables: string[];
+  credentials?: {
+    phoneNumberId: string;
+    accessToken: string;
+  }
+}): Promise<{ success: boolean; messageId?: string; error?: string }> {
+  const token = credentials?.accessToken || WA_ACCESS_TOKEN;
+  const phoneId = credentials?.phoneNumberId || WA_PHONE_NUMBER_ID;
+
+  if (!token || !phoneId) {
+    return { success: false, error: 'WhatsApp not configured' };
+  }
+
+  try {
+    const components: any[] = [
+      {
+        type: "body",
+        parameters: variables.map(text => ({ type: "text", text }))
+      }
+    ];
+
+    if (mediaUrl) {
+      components.push({
+        type: "header",
+        parameters: [
+          {
+            type: "image",
+            image: { link: mediaUrl }
+          }
+        ]
+      });
+    }
+
+    const response = await fetch(`https://graph.facebook.com/v21.0/${phoneId}/messages`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        to: to.replace(/\D/g, ''),
+        type: 'template',
+        template: {
+          name: templateName,
+          language: { code: 'en' },
+          components
+        },
+      }),
+    });
+
+    const data = await response.json();
+    return {
+      success: response.ok,
+      messageId: data.messages?.[0]?.id,
+    };
+  } catch (error) {
+    return { success: false, error: String(error) };
+  }
+}

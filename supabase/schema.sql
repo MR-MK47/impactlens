@@ -144,9 +144,11 @@ CREATE TABLE public.receipts (
 -- ═══════════════════════════════════════════════════════════
 -- 8. BLOG POSTS (AI-generated SEO content)
 -- ═══════════════════════════════════════════════════════════
-CREATE TABLE public.blog_posts (
+CREATE TABLE public.seo_blogs (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   org_id UUID NOT NULL REFERENCES public.organizations(id) ON DELETE CASCADE,
+  created_by UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+  submission_id UUID REFERENCES public.media_submissions(id) ON DELETE SET NULL,
   title TEXT NOT NULL,
   slug TEXT NOT NULL,
   body TEXT,
@@ -171,6 +173,7 @@ CREATE TABLE public.whatsapp_broadcasts (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   org_id UUID NOT NULL REFERENCES public.organizations(id) ON DELETE CASCADE,
   sent_by UUID REFERENCES public.profiles(id),
+  submission_id UUID REFERENCES public.media_submissions(id) ON DELETE SET NULL,
   audience_type TEXT NOT NULL CHECK (audience_type IN ('all','by_tag','by_tier','custom')),
   audience_filter JSONB DEFAULT '{}'::jsonb,
   message_template TEXT NOT NULL,
@@ -286,7 +289,7 @@ CREATE TRIGGER set_updated_at_organizations BEFORE UPDATE ON public.organization
 CREATE TRIGGER set_updated_at_profiles BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 CREATE TRIGGER set_updated_at_media_submissions BEFORE UPDATE ON public.media_submissions FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 CREATE TRIGGER set_updated_at_donors BEFORE UPDATE ON public.donors FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
-CREATE TRIGGER set_updated_at_blog_posts BEFORE UPDATE ON public.blog_posts FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+CREATE TRIGGER set_updated_at_seo_blogs BEFORE UPDATE ON public.seo_blogs FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
 -- Auto-update donor total on donation insert
 CREATE TRIGGER on_donation_inserted
@@ -305,7 +308,7 @@ ALTER TABLE public.media_submissions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.donors ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.donations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.receipts ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.blog_posts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.seo_blogs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.whatsapp_broadcasts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.team_invites ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.activity_log ENABLE ROW LEVEL SECURITY;
@@ -368,12 +371,12 @@ CREATE POLICY "Members can read receipts" ON public.receipts
 CREATE POLICY "Directors can manage receipts" ON public.receipts
   FOR ALL USING (org_id = public.get_user_org_id() AND public.get_user_role() IN ('director','manager','super_admin'));
 
--- ── Blog Posts ──
-CREATE POLICY "Public can read published posts" ON public.blog_posts
+-- ── SEO Blogs ──
+CREATE POLICY "Public can read published posts" ON public.seo_blogs
   FOR SELECT USING (status = 'published');
-CREATE POLICY "Members can read all org posts" ON public.blog_posts
+CREATE POLICY "Members can read all org posts" ON public.seo_blogs
   FOR SELECT USING (org_id = public.get_user_org_id());
-CREATE POLICY "Directors can manage posts" ON public.blog_posts
+CREATE POLICY "Directors can manage posts" ON public.seo_blogs
   FOR ALL USING (org_id = public.get_user_org_id() AND public.get_user_role() IN ('director','manager','super_admin'));
 
 -- ── Broadcasts ──
@@ -433,8 +436,8 @@ CREATE INDEX idx_donors_org ON public.donors(org_id);
 CREATE INDEX idx_donations_org ON public.donations(org_id);
 CREATE INDEX idx_donations_donor ON public.donations(donor_id);
 CREATE INDEX idx_receipts_org ON public.receipts(org_id);
-CREATE INDEX idx_blog_posts_org_status ON public.blog_posts(org_id, status);
-CREATE INDEX idx_blog_posts_slug ON public.blog_posts(org_id, slug);
+CREATE INDEX idx_seo_blogs_org_status ON public.seo_blogs(org_id, status);
+CREATE INDEX idx_seo_blogs_slug ON public.seo_blogs(org_id, slug);
 CREATE INDEX idx_activity_org ON public.activity_log(org_id, created_at DESC);
 CREATE INDEX idx_organizations_slug ON public.organizations(slug);
 CREATE INDEX idx_team_invites_token ON public.team_invites(token);

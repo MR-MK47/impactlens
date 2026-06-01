@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { ArrowUpRight, Users, CheckCircle2, MessageSquare, IndianRupee, Loader2 } from "lucide-react";
+import { ArrowUpRight, Users, CheckCircle2, MessageSquare, IndianRupee, Loader2, ImageIcon, ReceiptText, Search } from "lucide-react";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../lib/auth";
 
@@ -58,6 +58,7 @@ function DashboardPage() {
       // Initialize last 6 months
       for (let i = 5; i >= 0; i--) {
         const d = new Date();
+        d.setDate(1); // Set to 1st to prevent month rollover on 31st
         d.setMonth(d.getMonth() - i);
         const monthName = d.toLocaleString('default', { month: 'short' });
         monthlyTotals[monthName] = 0;
@@ -107,7 +108,7 @@ function DashboardPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-display">Welcome back</h2>
-        <div className="text-sm text-muted-foreground">{new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
+        <div suppressHydrationWarning className="text-sm text-muted-foreground">{new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">

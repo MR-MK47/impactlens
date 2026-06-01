@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { Loader2, CheckCircle2, Clock, XCircle, Search, Filter } from "lucide-react";
+import { Loader2, CheckCircle2, Clock, XCircle, Search, Filter, Camera } from "lucide-react";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../lib/auth";
 import type { MediaSubmission } from "../../lib/database.types";

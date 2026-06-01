@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Heart, Loader2, ArrowLeft } from "lucide-react";
 import { useState, useEffect } from "react";
-import { supabase } from "../../../../lib/supabase";
+import { supabase } from "../../../lib/supabase";
 
 export const Route = createFileRoute("/$orgSlug/blog/$postSlug")({
   component: TrustfeedBlogPost,

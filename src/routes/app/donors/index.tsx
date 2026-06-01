@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { Users, Search, Filter, Download, Plus, Mail, MessageCircle, ChevronRight, Loader2 } from "lucide-react";
-import { supabase } from "../../lib/supabase";
-import { useAuth } from "../../lib/auth";
-import type { Donor } from "../../lib/database.types";
+import { supabase } from "../../../lib/supabase";
+import { useAuth } from "../../../lib/auth";
+import type { Donor } from "../../../lib/database.types";
 
 export const Route = createFileRoute("/app/donors/")({
   component: DonorsIndex,
