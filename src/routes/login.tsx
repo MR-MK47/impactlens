@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Camera, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../lib/auth";
 
@@ -8,7 +8,7 @@ export const Route = createFileRoute("/login")({
 });
 
 function LoginPage() {
-  const { signIn, signInWithGoogle } = useAuth();
+  const { signIn, signInWithGoogle, user, profile, profileReady } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,17 +16,37 @@ function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // After login, wait for profileReady (profile fetched from DB), then
+  // send user to the right place — same logic as redirectIfAuthed guard.
+  useEffect(() => {
+    if (user && profileReady) {
+      if (profile?.role === 'super_admin') {
+        navigate({ to: '/admin' });
+      } else if (profile?.org_id) {
+        navigate({ to: '/app/dashboard' });
+      } else {
+        navigate({ to: '/onboarding' });
+      }
+    }
+  }, [user, profile, profileReady, navigate]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    const { error: err } = await signIn(email, password);
-    if (err) {
-      setError(err.message);
+    try {
+      const { error: err } = await signIn(email, password);
+      if (err) {
+        setError(err.message);
+      }
+      // On success: onAuthStateChange → fetchProfile → profileReady=true
+      // → useEffect above handles navigation
+    } catch (err: any) {
+      console.error("Login unexpected error:", err);
+      setError(err.message || "An unexpected error occurred");
+    } finally {
       setLoading(false);
-    } else {
-      navigate({ to: "/app/dashboard" });
     }
   };
 

@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Camera, Mail, Lock, Eye, EyeOff, User } from "lucide-react";
 import { useAuth } from "../lib/auth";
 
@@ -8,7 +8,7 @@ export const Route = createFileRoute("/signup")({
 });
 
 function SignupPage() {
-  const { signUp, signInWithGoogle } = useAuth();
+  const { signUp, signInWithGoogle, user, profile, profileReady } = useAuth();
   const navigate = useNavigate();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -16,6 +16,15 @@ function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Redirect already-authenticated users (client-side only, avoids SSR hydration mismatch)
+  useEffect(() => {
+    if (user && profileReady) {
+      if (profile?.role === 'super_admin') navigate({ to: '/admin' });
+      else if (profile?.org_id) navigate({ to: '/app/dashboard' });
+      else navigate({ to: '/onboarding' });
+    }
+  }, [user, profile, profileReady, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +55,7 @@ function SignupPage() {
       <div className="absolute inset-0 opacity-[0.04]">
         <div className="grid grid-cols-6 gap-2 p-4 h-full">
           {Array.from({ length: 24 }).map((_, i) => (
-            <div key={i} className="rounded-xl bg-primary" style={{ opacity: 0.3 + Math.random() * 0.7 }} />
+            <div key={i} className="rounded-xl bg-primary" style={{ opacity: 0.3 + ((i * 37) % 70) / 100 }} />
           ))}
         </div>
       </div>

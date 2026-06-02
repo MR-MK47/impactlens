@@ -9,6 +9,8 @@ interface AuthContextType {
   profile: Profile | null;
   organization: Organization | null;
   loading: boolean;
+  /** True once user + profile have both settled after any auth state change. */
+  profileReady: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (email: string, password: string, metadata?: Record<string, string>) => Promise<{ error: Error | null; user: User | null }>;
   signInWithGoogle: () => Promise<void>;
@@ -25,6 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [organization, setOrganization] = useState<Organization | null>(null);
   const [loading, setLoading] = useState(true);
+  const [profileReady, setProfileReady] = useState(false);
 
   const fetchProfile = async (userId: string) => {
     const { data: profileData } = await supabase
@@ -53,15 +56,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(s);
       setUser(s?.user ?? null);
       if (s?.user) {
-        fetchProfile(s.user.id).finally(() => setLoading(false));
+        fetchProfile(s.user.id).finally(() => {
+          setLoading(false);
+          setProfileReady(true);
+        });
       } else {
         setLoading(false);
+        setProfileReady(true);
       }
     });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, s) => {
+        setProfileReady(false);
         setSession(s);
         setUser(s?.user ?? null);
         if (s?.user) {
@@ -70,6 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setProfile(null);
           setOrganization(null);
         }
+        setProfileReady(true);
       }
     );
 
@@ -118,7 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider
       value={{
-        user, session, profile, organization, loading,
+        user, session, profile, organization, loading, profileReady,
         signIn, signUp, signInWithGoogle, signOut, refreshProfile, isRole,
       }}
     >

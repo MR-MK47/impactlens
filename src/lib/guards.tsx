@@ -36,15 +36,23 @@ export async function requireRole(...roles: UserRole[]) {
  */
 export async function requireOrg() {
   const session = await requireAuth();
-  const { data: profile } = await supabase
+
+  const { data: profile, error } = await supabase
     .from('profiles')
     .select('org_id, role')
     .eq('id', session.user.id)
     .single();
 
+  if (error && error.code !== 'PGRST116') {
+    // PGRST116 = row not found (new user, no profile yet) — redirect to onboarding
+    // Any other error: log it but still go to onboarding gracefully
+    console.error("requireOrg profile fetch error:", error);
+  }
+
   if (!profile?.org_id) {
     throw redirect({ to: '/onboarding' });
   }
+
   return { orgId: profile.org_id, role: profile.role as UserRole };
 }
 

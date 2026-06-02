@@ -35,13 +35,15 @@ function OnboardingFlow() {
 
   // Redirect if not logged in
   useEffect(() => {
+    if (loading) return;
+    
     if (!user) {
       navigate({ to: "/login" });
     } else if (profile?.org_id) {
       // If already has org, go to dashboard
       navigate({ to: "/app/dashboard" });
     }
-  }, [user, profile, navigate]);
+  }, [user, profile, loading, navigate]);
 
   const handleNext = async () => {
     setError("");

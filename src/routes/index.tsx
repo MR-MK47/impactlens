@@ -27,13 +27,18 @@ function Landing() {
           <span className="text-lg font-semibold tracking-tight">ImpactLens</span>
         </div>
         <div className="hidden md:flex items-center gap-8 text-sm text-foreground/70">
-          <a href="#features">Features</a>
-          <a href="#pricing">Pricing</a>
-          <a href="#business">For Businesses</a>
+          <a href="#features" className="hover:text-foreground transition-colors">Features</a>
+          <a href="#pricing" className="hover:text-foreground transition-colors">Pricing</a>
+          <a href="#business" className="hover:text-foreground transition-colors">For Businesses</a>
         </div>
-        <Link to="/onboarding" className="h-10 px-4 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition">
-          Get Started Free
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link to="/login" className="hidden md:flex h-10 px-4 rounded-lg items-center justify-center text-sm font-medium hover:bg-secondary transition-colors">
+            Sign In
+          </Link>
+          <Link to="/onboarding" className="h-10 px-4 rounded-lg bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium hover:opacity-90 transition-opacity">
+            Get Started Free
+          </Link>
+        </div>
       </nav>
 
       {/* Hero */}
@@ -50,11 +55,11 @@ function Landing() {
               ImpactLens turns field media into donor trust, WhatsApp receipts, and Google rankings — automatically.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link to="/onboarding" className="h-12 px-6 rounded-lg bg-primary text-primary-foreground font-medium inline-flex items-center gap-2 hover:opacity-90">
+              <Link to="/onboarding" className="h-12 px-6 rounded-lg bg-primary text-primary-foreground font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
                 Start for Free <ArrowRight className="size-4" />
               </Link>
-              <Link to="/trustfeed" className="h-12 px-6 rounded-lg border border-foreground/15 font-medium inline-flex items-center hover:bg-secondary">
-                See Demo
+              <Link to="/login" className="h-12 px-6 rounded-lg border border-border font-medium flex items-center justify-center hover:bg-secondary transition-colors">
+                Sign In
               </Link>
             </div>
             <div className="mt-8 flex items-center gap-3 text-xs text-muted-foreground">
