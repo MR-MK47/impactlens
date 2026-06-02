@@ -14,5 +14,12 @@ export default defineConfig({
   },
   // Use Vercel Nitro preset so the build output is placed in .vercel/output
   // which Vercel's Build Output API understands natively.
-  nitro: { preset: "vercel" },
+  nitro: { 
+    preset: "vercel",
+    output: {
+      dir: ".vercel/output",
+      serverDir: ".vercel/output/server",
+      publicDir: ".vercel/output/static"
+    }
+  },
 });
