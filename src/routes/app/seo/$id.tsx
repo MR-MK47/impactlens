@@ -50,10 +50,10 @@ function SeoEditorPage() {
       setFormData({
         title: data.title || "",
         meta_description: data.meta_description || "",
-        content: data.content || "",
-        focus_keyword: data.focus_keyword || "",
+        content: data.body || "",
+        focus_keyword: data.focus_keywords?.[0] || "",
         slug: data.slug || "",
-        is_published: data.is_published || false
+        is_published: data.status === 'published'
       });
       setLoading(false);
     }
@@ -70,10 +70,10 @@ function SeoEditorPage() {
         .update({
           title: formData.title,
           meta_description: formData.meta_description,
-          content: formData.content,
-          focus_keyword: formData.focus_keyword,
+          body: formData.content,
+          focus_keywords: [formData.focus_keyword],
           slug: formData.slug,
-          is_published: formData.is_published,
+          status: formData.is_published ? 'published' : 'draft',
           updated_at: new Date().toISOString()
         })
         .eq('id', id);

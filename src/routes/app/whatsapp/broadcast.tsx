@@ -90,11 +90,11 @@ function BroadcastPage() {
           to: donor.phone!,
           templateName: 'impact_update', // You would create this template in Meta Business Manager
           mediaUrl: imageUrl,
-          variables: [
-            donor.full_name.split(' ')[0], // {{1}} Name
-            messageBody || '', // {{2}} Update
-            organization.name // {{3}} Org Name
-          ]
+          variables: {
+            donor_name: donor.full_name.split(' ')[0],
+            update_text: messageBody || '',
+            org_name: organization.name
+          }
         })
       );
 
@@ -106,6 +106,7 @@ function BroadcastPage() {
         org_id: organization.id,
         sent_by: user.id,
         submission_id: selectedSubmissionId || null,
+        audience_type: 'all',
         message_template: 'impact_update',
         message_body: messageBody,
         recipient_count: targetDonors.length,

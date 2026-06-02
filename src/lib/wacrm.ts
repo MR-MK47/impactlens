@@ -215,7 +215,7 @@ export async function sendWhatsAppTemplate({
   to: string;
   templateName: string;
   mediaUrl?: string;
-  variables: string[];
+  variables: Record<string, string>;
   credentials?: {
     phoneNumberId: string;
     accessToken: string;
@@ -232,7 +232,11 @@ export async function sendWhatsAppTemplate({
     const components: any[] = [
       {
         type: "body",
-        parameters: variables.map(text => ({ type: "text", text }))
+        parameters: Object.entries(variables).map(([key, text]) => ({ 
+          type: "text", 
+          parameter_name: key,
+          text 
+        }))
       }
     ];
 

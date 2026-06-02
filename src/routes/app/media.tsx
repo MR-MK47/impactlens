@@ -53,9 +53,10 @@ function MediaLibraryPage() {
           title: seoContent.title,
           slug: seoContent.slug,
           meta_description: seoContent.metaDescription,
-          focus_keyword: seoContent.focusKeyword,
-          content: seoContent.markdownContent,
-          is_published: false
+          focus_keywords: [seoContent.focusKeyword],
+          body: seoContent.markdownContent,
+          status: 'draft',
+          is_ai_generated: true
         })
         .select()
         .single();

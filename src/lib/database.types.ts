@@ -95,6 +95,10 @@ export interface Donor {
   phone: string | null;
   email: string | null;
   city: string | null;
+  state: string | null;
+  pincode: string | null;
+  address: string | null;
+  pan_number: string | null;
   country_code: string;
   interest_tags: string[];
   donation_tier: DonorTier;
@@ -170,6 +174,7 @@ export interface WhatsAppBroadcast {
   audience_type: BroadcastAudience;
   audience_filter: Json;
   message_template: string;
+  message_body: string | null;
   attachment_url: string | null;
   recipient_count: number;
   delivered_count: number;

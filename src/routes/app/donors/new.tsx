@@ -42,7 +42,7 @@ function NewDonorPage() {
           state: formData.state || null,
           pincode: formData.pincode || null,
           status: 'active',
-          donation_tier: 'bronze',
+          donation_tier: 'standard',
           total_donated: 0
         })
         .select()

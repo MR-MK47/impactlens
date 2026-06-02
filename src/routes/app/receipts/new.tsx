@@ -58,9 +58,7 @@ function NewReceiptPage() {
           org_id: organization.id,
           donor_id: selectedDonor.id,
           amount: parseFloat(formData.amount),
-          currency: 'INR',
           payment_method: formData.paymentMethod,
-          status: 'completed',
           donation_date: new Date().toISOString()
         })
         .select()
@@ -94,11 +92,11 @@ function NewReceiptPage() {
         is80G: formData.is80G,
       });
 
-      // 4. Upload PDF to Storage
-      const fileName = `${organization.id}/${receiptNumber}.pdf`;
+      // 4. Upload HTML receipt to Storage
+      const fileName = `${organization.id}/${receiptNumber}.html`;
       const { error: uploadError } = await supabase.storage
         .from('receipts')
-        .upload(fileName, pdfBlob, { contentType: 'application/pdf' });
+        .upload(fileName, pdfBlob, { contentType: 'text/html' });
 
       if (uploadError) throw uploadError;
 
@@ -111,19 +109,18 @@ function NewReceiptPage() {
         .from('receipts')
         .insert({
           org_id: organization.id,
+          donor_id: selectedDonor.id,
           donation_id: donation.id,
           receipt_number: receiptNumber,
-          is_80g: formData.is80G,
+          amount: parseFloat(formData.amount),
+          payment_method: formData.paymentMethod,
           pdf_url: publicUrl,
         });
 
       if (receiptError) throw receiptError;
 
       // 6. Update Donor Total
-      await supabase.rpc('increment_donor_total', {
-        d_id: selectedDonor.id,
-        amount_to_add: parseFloat(formData.amount)
-      });
+      // Handled automatically by database trigger `on_donation_inserted`
 
       // Log activity
       await supabase.from('activity_log').insert({

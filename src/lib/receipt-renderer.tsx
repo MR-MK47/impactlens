@@ -83,9 +83,10 @@ export async function renderReceiptToPDF(data: any): Promise<Blob> {
     }
   };
 
+  const fullHtml = generateReceiptHTML(receiptData);
+  
   const html = generateReceiptHTML(receiptData);
-  // Simulating a PDF blob with HTML content
-  return new Blob([html], { type: 'application/pdf' });
+  return new Blob([html], { type: 'text/html' });
 }
 
 export type { ReceiptData };

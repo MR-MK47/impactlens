@@ -128,14 +128,23 @@ function ReceiptsIndex() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       {receipt.pdf_url ? (
-                        <a 
-                          href={receipt.pdf_url}
-                          target="_blank"
-                          rel="noreferrer"
+                        <button 
+                          onClick={async () => {
+                            try {
+                              const res = await fetch(receipt.pdf_url);
+                              const html = await res.text();
+                              const blob = new Blob([html], { type: 'text/html' });
+                              const url = URL.createObjectURL(blob);
+                              window.open(url, '_blank');
+                              setTimeout(() => URL.revokeObjectURL(url), 5000);
+                            } catch (e) {
+                              window.open(receipt.pdf_url, '_blank');
+                            }
+                          }}
                           className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border text-xs font-medium hover:bg-secondary transition-colors"
                         >
-                          <Download className="size-3.5" /> PDF
-                        </a>
+                          <Download className="size-3.5" /> Receipt
+                        </button>
                       ) : (
                         <span className="text-xs text-muted-foreground">Generating...</span>
                       )}
