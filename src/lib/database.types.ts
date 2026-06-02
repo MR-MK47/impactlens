@@ -233,5 +233,8 @@ export interface Database {
       get_user_role: { Args: Record<string, never>; Returns: string };
       slugify: { Args: { text: string }; Returns: string };
     };
+    Views: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
   };
 }

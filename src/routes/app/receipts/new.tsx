@@ -13,7 +13,7 @@ export const Route = createFileRoute("/app/receipts/new")({
 function NewReceiptPage() {
   const { organization } = useAuth();
   const navigate = useNavigate();
-  const searchParams = Route.useSearch<{ donor_id?: string }>();
+  const searchParams = Route.useSearch() as { donor_id?: string };
   
   const [donors, setDonors] = useState<Donor[]>([]);
   const [loading, setLoading] = useState(true);
@@ -60,9 +60,10 @@ function NewReceiptPage() {
           amount: parseFloat(formData.amount),
           payment_method: formData.paymentMethod,
           donation_date: new Date().toISOString()
-        })
+        } as any)
         .select()
         .single();
+      const donation = data as any;
 
       if (donationError) throw donationError;
 
@@ -75,9 +76,9 @@ function NewReceiptPage() {
       const pdfBlob = await renderReceiptToPDF({
         organization: {
           name: organization.name,
-          address: organization.address || '',
-          panNumber: organization.pan_number || '',
-          registrationNumber: organization.registration_number || '',
+          address: (organization as any).address || '',
+          panNumber: (organization as any).pan_number || '',
+          registrationNumber: (organization as any).registration_number || '',
           logoUrl: organization.logo_url || undefined,
         },
         donor: {
@@ -115,7 +116,7 @@ function NewReceiptPage() {
           amount: parseFloat(formData.amount),
           payment_method: formData.paymentMethod,
           pdf_url: publicUrl,
-        });
+        } as any);
 
       if (receiptError) throw receiptError;
 
@@ -127,7 +128,7 @@ function NewReceiptPage() {
         org_id: organization.id,
         user_id: (await supabase.auth.getUser()).data.user?.id,
         action: `Generated receipt ${receiptNumber} for ₹${formData.amount}`,
-      });
+      } as any);
 
       navigate({ to: "/app/receipts" });
     } catch (err) {
@@ -139,7 +140,7 @@ function NewReceiptPage() {
   };
 
   const selectedDonor = donors.find(d => d.id === formData.donorId);
-  const canIssue80G = selectedDonor?.pan_number && organization?.pan_number;
+  const canIssue80G = selectedDonor?.pan_number && (organization as any)?.pan_number;
 
   if (loading) {
     return (
