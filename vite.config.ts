@@ -15,6 +15,13 @@ export default defineConfig({
   // Use Vercel Nitro preset so the build output is placed in .vercel/output
   // which Vercel's Build Output API understands natively.
   nitro: { 
-    preset: "vercel"
+    preset: "vercel",
+    // We MUST override the output here because @lovable.dev/vite-tanstack-config 
+    // hardcodes output to "dist" which breaks the vercel preset.
+    output: {
+      dir: ".vercel/output",
+      serverDir: ".vercel/output/functions/__nitro.func",
+      publicDir: ".vercel/output/static"
+    }
   },
 });
