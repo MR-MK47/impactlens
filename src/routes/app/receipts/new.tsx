@@ -52,7 +52,7 @@ function NewReceiptPage() {
       if (!selectedDonor) throw new Error("Donor not found");
 
       // 1. Create Donation Record
-      const { data: donation, error: donationError } = await supabase
+      const { data, error: donationError } = await supabase
         .from('donations')
         .insert({
           org_id: organization.id,
