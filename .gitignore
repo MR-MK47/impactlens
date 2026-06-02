@@ -20,6 +20,8 @@ dist
 dist-ssr
 build
 out
+.vercel/
+.tanstack/
 
 # Environment variables
 .env
